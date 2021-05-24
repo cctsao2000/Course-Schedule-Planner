@@ -9,10 +9,10 @@ import java.util.HashMap;
 
 public class Query {
 	
-	private static final String SERVER = "jdbc:mysql://140.119.19.73:9306/";
-	private static final String DATABASE = "MG04";
-	private static final String USERNAME = "MG04";
-	private static final String PASSWORD = "6hYWDq";
+	private static final String SERVER = "jdbc:mysql://";
+	private static final String DATABASE = "";
+	private static final String USERNAME = "";
+	private static final String PASSWORD = "";
 	private static final String ENCODING = "&useUnicode=true&characterEncoding=UTF-8";
 	
 	public static String dbNewTable(String tableName) {
