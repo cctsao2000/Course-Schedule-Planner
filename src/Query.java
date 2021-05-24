@@ -9,24 +9,122 @@ import java.util.HashMap;
 
 public class Query {
 	
-	private static final String SERVER = "jdbc:mysql://";
-	private static final String DATABASE = "";
-	private static final String USERNAME = "";
-	private static final String PASSWORD = "";
+	private static final String SERVER = "jdbc:mysql://140.119.19.73:9306/";
+	private static final String DATABASE = "MG04";
+	private static final String USERNAME = "MG04";
+	private static final String PASSWORD = "6hYWDq";
 	private static final String ENCODING = "&useUnicode=true&characterEncoding=UTF-8";
 	
-	public Query(String input,SchedulePanel display) {
-		if(input.equals("  XXX306XXX-000111222-程式設計二")) {
-			input = "";
+	public static String dbNewTable(String tableName) {
+		String query = String.format("CREATE TABLE %s (CourseID text,Credit double(10,2),Course_CHName text,Instructor_CHName text,Session text,Classroom text,Locked boolean)", tableName);
+		return query;
+	}
+	
+	//註冊
+	public static void register(int id, String name, char[] pass) {
+		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
+		String query;
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(url);
+			Statement stat = conn.createStatement();
+			query = String.format("INSERT INTO Member VALUES (%d,'%s','%s')",id,name,String.valueOf(pass));
+			stat.execute(query);
+			stat.execute(dbNewTable(id+"Result"));
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally{
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	//登入驗證
+	public static boolean loginVerify(int id, char[] pass) {
+		boolean verify = false;
+		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
+		String query;
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(url);
+			Statement stat = conn.createStatement();
+			query = String.format("SELECT Password FROM Member WHERE MemberID = %d",id);
+			boolean hasResultSet = stat.execute(query);
+			if(hasResultSet) {
+				ResultSet result = stat.getResultSet();
+				if(result.next()) {
+					String realPass = result.getString(1);
+					if(pass.length == realPass.length()) {
+						for (int i=0;i<pass.length;i++) {
+							verify = true;
+							if(pass[i]!=realPass.charAt(i)) {
+								verify = false;
+								break;
+							}
+						}
+					}
+				}
+				result.close();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally{
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return verify;
+	}
+	
+	public static String getMemberName(int id) {
+		String mName = "Visitor";
+		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
+		String query;
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(url);
+			Statement stat = conn.createStatement();
+			query = String.format("SELECT MemberName FROM Member WHERE MemberID = %d", id);
+			stat.execute(query);
+			ResultSet result = stat.getResultSet();
+			if (result.next()) {
+				mName = result.getString(1);
+			}
+			result.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally{
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		return mName;
+	}
+	
+	//登入頁面訪客搜尋
+	public static void visitorInitSearch(String input) {
+		if(input.equals("")||input.equals("  XXX306XXX-000111222-程式設計二")) {
+			return;
 		}
 		ArrayList<String> inputCourseList = new ArrayList<String>();
 		for (String course:input.split("-")) {
 			inputCourseList.add(course);
 		}
-		dbSearch(inputCourseList);
+		dbSearch("Search",inputCourseList);
 	}
 	
-	public void dbSearch(ArrayList<String> input) {
+	//根據課程代碼或名字去課程資料庫找
+	public static void dbSearch(String user, ArrayList<String> input) {
 		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
 		String query;
 		Connection conn = null;
@@ -42,7 +140,7 @@ public class Query {
 				} catch (NumberFormatException|IndexOutOfBoundsException e) {
 					id = false;
 				}
-				if(id == true) {
+				if(id) {
 					query = String.format("SELECT CourseID,Credit,Course_CHName,Instructor_CHName,Session,Classroom FROM Semester_2021_courses WHERE CourseID = '%s'", inp);
 				}
 				else {
@@ -51,7 +149,7 @@ public class Query {
 				boolean hasResultSet = stat.execute(query);
 				if (hasResultSet) {
 					ResultSet result = stat.getResultSet();
-					dbAddResult(result);
+					dbAddResult(user,result);
 					result.close();
 				}
 			}
@@ -66,53 +164,9 @@ public class Query {
 			}
 		}
 	}
-
-	public ArrayList<Course> dbSearch(ArrayList<String> input, boolean temporary) {
-		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
-		String query;
-		ArrayList<Course> output = new ArrayList<Course>();
-		Connection conn = null;
-		try {
-			conn = DriverManager.getConnection(url);
-			Statement stat = conn.createStatement();
-			boolean id;
-			for(int i=0; i<input.size(); i++) {
-				String inp = input.get(i);
-				try {
-					Integer.parseInt(inp.substring(6));
-					id = true;
-				} catch (NumberFormatException|IndexOutOfBoundsException e) {
-					id = false;
-				}
-				if(id == true) {
-					query = String.format("SELECT CourseID,Credit,Course_CHName,Instructor_CHName,Session,Classroom FROM SearchResult WHERE CourseID = '%s'", inp);
-				}
-				else {
-					query = String.format("SELECT CourseID,Credit,Course_CHName,Instructor_CHName,Session,Classroom FROM SearchResult WHERE Course_CHName = '%s'", inp);
-				}
-				boolean hasResultSet = stat.execute(query);
-				if (hasResultSet) {
-					ResultSet result = stat.getResultSet();
-					while(result.next()){
-						output.add(new Course(result.getString(1),result.getDouble(2),result.getString(3),result.getString(4),result.getString(5),result.getString(6)));
-					}
-					result.close();
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		finally{
-			try {
-				conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-		return output;
-	}
-
-	public HashMap<String,Integer> dbSessionGroup() {
+	
+	//將所搜課程根據時段分組
+	public static HashMap<String,Integer> dbSessionGroup(String user) {
 		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
 		String query;
 		Connection conn = null;
@@ -120,14 +174,13 @@ public class Query {
 		try {
 			conn = DriverManager.getConnection(url);
 			Statement stat = conn.createStatement();
-			query = "SELECT Session,COUNT(1) FROM SearchResult GROUP BY Session;";
+			query = String.format("SELECT Session,COUNT(1) FROM %sResult GROUP BY Session", user);
 			boolean hasResultSet = stat.execute(query);
 			if (hasResultSet) {
 				ResultSet result = stat.getResultSet();
 				while (result.next()) {
 					sessionGroup.put(result.getString(1),result.getInt(2));
 				}
-//				System.out.println(sessionGroup);
 				result.close();
 			}
 		} catch (SQLException e) {
@@ -142,13 +195,14 @@ public class Query {
 		}
 		return sessionGroup;
 	}
-
-	public ArrayList<Course> getSessionCourse(String session){
+	
+	//取得同時段課程列表
+	public static ArrayList<Course> getSessionCourse(String user, String session){
 		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
 		String query;
 		ArrayList<Course> sessionCourse = new ArrayList<Course>();
 		Connection conn = null;
-		query = String.format("SELECT CourseID,Credit,Course_CHName,Instructor_CHName,Session,Classroom FROM SearchResult WHERE Session = '%s'", session);
+		query = String.format("SELECT CourseID,Credit,Course_CHName,Instructor_CHName,Session,Classroom FROM %sResult WHERE Session = '%s'", user, session);
 		try {
 			conn = DriverManager.getConnection(url);
 			Statement stat = conn.createStatement();
@@ -173,29 +227,8 @@ public class Query {
 		return sessionCourse;
 	}
 	
-	public static void dbNewTable(String tableName) {
-		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
-		String query;
-		Connection conn = null;
-		query = String.format("CREATE TABLE %s (CourseID text,Credit double(10,2),Course_CHName text,Instructor_CHName text,Session text,Classroom text);", tableName);
-		try {
-			conn = DriverManager.getConnection(url);
-			Statement stat = conn.createStatement();
-			stat.execute(query);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		finally{
-			try {
-				conn.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-	
 	@SuppressWarnings("rawtypes")
-	public ArrayList[] dbGetResult() {
+	public static ArrayList[] dbGetResult(String user) {
 		ArrayList<String> coursesName = new ArrayList<String>();
 		ArrayList<Course> courses = new ArrayList<Course>();
 		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
@@ -204,7 +237,7 @@ public class Query {
 		try {
 			conn = DriverManager.getConnection(url);
 			Statement stat = conn.createStatement();
-			query = "SELECT * FROM SearchResult";
+			query = String.format("SELECT * FROM %sResult", user);
 			boolean hasResultSet = stat.execute(query);
 			if (hasResultSet) {
 				ResultSet result = stat.getResultSet();
@@ -225,7 +258,7 @@ public class Query {
 		return result;
 	}
 	
-	public void addCourseList(ResultSet result,ArrayList<String> nameoutput,ArrayList<Course> courseoutput) throws SQLException {
+	public static void addCourseList(ResultSet result,ArrayList<String> nameoutput,ArrayList<Course> courseoutput) throws SQLException {
 		while (result.next()) {
 			if (nameoutput.contains(result.getString(3))!=true) {
 				nameoutput.add(result.getString(3));
@@ -234,7 +267,7 @@ public class Query {
 		}
 	}
 	
-	public void dbAddResult(ResultSet result) {
+	public static void dbAddResult(String user, ResultSet result) {
 		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
 		String query;
 		Connection conn = null;
@@ -242,7 +275,7 @@ public class Query {
 			conn = DriverManager.getConnection(url);
 			Statement stat = conn.createStatement();
 			while (result.next()) {
-				query = String.format("INSERT INTO SearchResult VALUES ('%s',%.2f,'%s','%s','%s','%s',0);",result.getString(1),result.getDouble(2),result.getString(3),result.getString(4),result.getString(5),result.getString(6));
+				query = String.format("INSERT INTO %sResult VALUES ('%s',%.2f,'%s','%s','%s','%s',0)",user,result.getString(1),result.getDouble(2),result.getString(3),result.getString(4),result.getString(5),result.getString(6));
 				stat.execute(query);
 			}
 		} catch (SQLException e) {
@@ -257,7 +290,8 @@ public class Query {
 		}
 	}
 	
-	public void dbLockControl(String input, boolean lock) {
+	//變更課程鎖定狀態
+	public static void dbLockControl(String user, String input, boolean lock) {
 		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
 		String query;
 		Connection conn = null;
@@ -265,10 +299,10 @@ public class Query {
 			conn = DriverManager.getConnection(url);
 			Statement stat = conn.createStatement();
 			if (lock == true) {
-				query = String.format("UPDATE SearchResult SET Locked = 1 WHERE CourseID = '%s'", input);
+				query = String.format("UPDATE %sResult SET Locked = 1 WHERE CourseID = '%s'",user, input);
 			}
 			else {
-				query = String.format("UPDATE SearchResult SET Locked = 0 WHERE CourseID = '%s'", input);
+				query = String.format("UPDATE %sResult SET Locked = 0 WHERE CourseID = '%s'",user, input);
 			}
 			stat.execute(query);
 		} catch (SQLException e) {
@@ -283,7 +317,8 @@ public class Query {
 		}
 	}
 	
-	public boolean getLockStatus(String input) {
+	//取得鎖定狀態以生成鎖圖案
+	public static boolean getLockStatus(String user, String input) {
 		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
 		String query;
 		Connection conn = null;
@@ -291,7 +326,7 @@ public class Query {
 		try {
 			conn = DriverManager.getConnection(url);
 			Statement stat = conn.createStatement();
-			query = String.format("SELECT Locked FROM SearchResult WHERE CourseID = '%s'", input);
+			query = String.format("SELECT Locked FROM %sResult WHERE CourseID = '%s'", user, input);
 			stat.execute(query);
 			ResultSet result = stat.getResultSet();
 			if (result.next()) {
@@ -311,7 +346,8 @@ public class Query {
 		return status;
 	}
 	
-	public void dbDeleteResult(ArrayList<String> input) {
+	//輸入框課程刪除
+	public static void dbDeleteResult(String user, ArrayList<String> input) {
 		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
 		String query;
 		Connection conn = null;
@@ -328,10 +364,10 @@ public class Query {
 					id = false;
 				}
 				if(id == true) {
-					query = String.format("DELETE FROM SearchResult WHERE CourseID = '%s' and Locked <> 1", inp);
+					query = String.format("DELETE FROM %sResult WHERE CourseID = '%s' and Locked <> 1", user, inp);
 				}
 				else {
-					query = String.format("DELETE FROM SearchResult WHERE Course_CHName = '%s'and Locked <> 1", inp);
+					query = String.format("DELETE FROM %sResult WHERE Course_CHName = '%s'and Locked <> 1", user, inp);
 				}
 				stat.execute(query);
 			}
@@ -347,14 +383,15 @@ public class Query {
 		}
 	}
 	
-	public void dbDeleteResult(String input) {
+	//單堂課程按鍵刪除
+	public static void dbDeleteResult(String user, String input) {
 		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
 		String query;
 		Connection conn = null;
 		try {
 			conn = DriverManager.getConnection(url);
 			Statement stat = conn.createStatement();
-			query = String.format("DELETE FROM SearchResult WHERE CourseID = '%s' and Locked <> 1", input);
+			query = String.format("DELETE FROM %sResult WHERE CourseID = '%s' and Locked <> 1", user, input);
 			stat.execute(query);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -369,14 +406,14 @@ public class Query {
 	}
 	
 	//開發者隱藏功能：輸入all能把沒有鎖定的課都drop掉
-	public void dbDeleteResult(boolean input) {
+	public static void dbDeleteResult(String user) {
 		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
 		String query;
 		Connection conn = null;
 		try {
 			conn = DriverManager.getConnection(url);
 			Statement stat = conn.createStatement();
-			query = "DELETE FROM SearchResult WHERE Locked <> 1";
+			query = String.format("DELETE FROM %sResult WHERE Locked <> 1", user);
 			stat.execute(query);
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -390,11 +427,12 @@ public class Query {
 		}
 	}
 	
+	//訪客登出紀錄刪除
 	public static void dbDeleteResult() {
 		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
 		String query;
 		Connection conn = null;
-		query = "DELETE FROM SearchResult;";
+		query = "DELETE FROM SearchResult";
 		try {
 			conn = DriverManager.getConnection(url);
 			Statement stat = conn.createStatement();

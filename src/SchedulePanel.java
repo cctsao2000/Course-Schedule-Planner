@@ -40,7 +40,8 @@ import javax.swing.event.ChangeListener;
 
 public class SchedulePanel extends JPanel {
 
-	private Query initQuery;
+	private String memberID;
+	private String memberName;
 	private JLabel imgLabel;
 	private JLabel titleLabel;
 	private JLabel subtitleLabel;
@@ -51,6 +52,7 @@ public class SchedulePanel extends JPanel {
 	private JButton adjustCourse;
 		
 	private JPanel linkPanel;
+	private JLabel memberNameLabel;
 	private JButton linkLabel;
 	private JButton logoutLabel;
 	private JPanel currentCoursePanel;
@@ -172,9 +174,20 @@ public class SchedulePanel extends JPanel {
 		this.adjustCourse.setFont(new Font("Avenir-Black",Font.PLAIN,38));
 		addButtonListenerPlus();
 		
-		this.linkLabel = new JButton("政大全校課程查詢系統");
+		this.memberNameLabel = new JLabel("Hi");
+		this.memberNameLabel.setFont(new Font("Avenir",Font.PLAIN,18));
+		this.memberNameLabel.setForeground(new Color(86,122,154));
+		
 		Map<TextAttribute, Integer> fontAttributes = new HashMap<TextAttribute, Integer>();
 		fontAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+		this.logoutLabel = new JButton("登出");
+		this.logoutLabel.setFont(new Font("Avenir",Font.PLAIN,16).deriveFont(fontAttributes));
+		this.logoutLabel.setForeground(new Color(86,122,154));
+		this.logoutLabel.setBorderPainted(false);
+		this.logoutLabel.setOpaque(false);
+		this.logoutLabel.setBackground(Color.WHITE);
+		
+		this.linkLabel = new JButton("政大全校課程查詢系統");
 		this.linkLabel.setFont(new Font("Avenir",Font.PLAIN,16).deriveFont(fontAttributes));
 		this.linkLabel.setForeground(new Color(86,122,154));
 		this.linkLabel.setBorderPainted(false);
@@ -186,22 +199,22 @@ public class SchedulePanel extends JPanel {
 			e.printStackTrace();
 		}
 		
-		this.logoutLabel = new JButton("登出");
-		this.logoutLabel.setFont(new Font("Avenir",Font.PLAIN,16).deriveFont(fontAttributes));
-		this.logoutLabel.setForeground(new Color(86,122,154));
-		this.logoutLabel.setBorderPainted(false);
-		this.logoutLabel.setOpaque(false);
-		this.logoutLabel.setBackground(Color.WHITE);
-		
 		this.linkPanel = new JPanel();
 		this.linkPanel.setBackground(Color.WHITE);
 		this.linkPanel.setLayout(new GridBagLayout());
+		
 		GridBagConstraints lp = new GridBagConstraints();
 		lp.gridx = 0;
 		lp.gridy = 0;
+		lp.insets = new Insets(0,70,0,0);
 		lp.anchor = GridBagConstraints.NORTHEAST;
+		this.linkPanel.add(this.memberNameLabel,lp);
+		lp.insets = new Insets(0,0,0,0);
+		lp.gridx = 1;
 		this.linkPanel.add(this.logoutLabel,lp);
+		lp.gridx = 0;
 		lp.gridy = 1;
+		lp.gridwidth = 2;
 		this.linkPanel.add(this.linkLabel,lp);
 		
 		this.saveSchedule = new JButton("下載課表");
@@ -216,6 +229,10 @@ public class SchedulePanel extends JPanel {
 		this.creditLabel.setForeground(new Color(122,122,122));
 	}
 	
+	public void setMemberNameLabel() {
+		this.memberNameLabel.setText(String.format("Hi, %s", memberName));
+	}
+	
 	public JPanel getTimeTablePanel() {
 		return this.timeTablePanel;
 	}
@@ -224,12 +241,21 @@ public class SchedulePanel extends JPanel {
 		return this.currentCoursePanel;
 	}
 	
-	public void recordQuery(Query q) {
-		this.initQuery = q;
+	public void recordMemberID(int mid) {
+		this.memberID = Integer.toString(mid);
 	}
 	
-	public Query getInitQuery() {
-		return this.initQuery;
+	public void recordVisitor(String visitor) {
+		this.memberID = visitor;
+	}
+	
+	public void recordMemberName(int mid) {
+		if(mid == 0) {
+			this.memberName = "visitor";
+		}
+		else{
+			this.memberName = Query.getMemberName(mid);
+		}
 	}
 	
 	public void createTimeTable(ArrayList<Course> courseList) {
@@ -307,12 +333,12 @@ public class SchedulePanel extends JPanel {
 		Font cNameFont = new Font("Avenir-Medium",Font.PLAIN,14);
 		Color cWordColor = new Color(70,70,70);
 		Font cInfoFont = new Font("Avenir",Font.PLAIN,13);
-		HashMap<String,Integer> sg = this.initQuery.dbSessionGroup();
+		HashMap<String,Integer> sg = Query.dbSessionGroup(memberID);
 		for(String session:sg.keySet()) {
 			JPanel courseBlock = new JPanel();
 			int numClash = sg.get(session);
 			courseBlock.setLayout(new GridLayout(1,numClash));
-			ArrayList<Course> sc = this.initQuery.getSessionCourse(session);
+			ArrayList<Course> sc = Query.getSessionCourse(memberID,session);
 			GridBagConstraints ses = sc.get(0).sessionVisualization(session);
 			for(Course cour:sc) {
 				co.insets = new Insets(0,(numClash-1)*(30-numClash),0,0);
@@ -391,8 +417,8 @@ public class SchedulePanel extends JPanel {
 				if(result == 0) {
 					removeTimeTable();
 					removeCurrentCoursePanel();
-					initQuery.dbDeleteResult(cour.getCourseID());
-					updateTimeTable(initQuery.dbGetResult()[1]);
+					Query.dbDeleteResult(memberID,cour.getCourseID());
+					updateTimeTable(Query.dbGetResult(memberID)[1]);
 					updateCurrentCoursePanel();
 				}
 			}
@@ -406,7 +432,7 @@ public class SchedulePanel extends JPanel {
 		lockButton.setBorderPainted(false);
 		lockButton.setSelectedIcon(new ImageIcon(new ImageIcon("locked.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
 		lockButton.setIcon(new ImageIcon(new ImageIcon("unlocked.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
-		lockButton.setSelected(initQuery.getLockStatus(CourseID));
+		lockButton.setSelected(Query.getLockStatus(memberID,CourseID));
 		return lockButton;
 	}
 	
@@ -418,12 +444,12 @@ public class SchedulePanel extends JPanel {
 		Font cNameFont = new Font("Avenir-Medium",Font.PLAIN,14);
 		Color cWordColor = new Color(70,70,70);
 		Font cInfoFont = new Font("Avenir",Font.PLAIN,13);
-		HashMap<String,Integer> sg = this.initQuery.dbSessionGroup();
+		HashMap<String,Integer> sg = Query.dbSessionGroup(memberID);
 		for(String session:sg.keySet()) {
 			JPanel courseBlock = new JPanel();
 			int numClash = sg.get(session);
 			courseBlock.setLayout(new GridLayout(1,numClash));
-			ArrayList<Course> sc = this.initQuery.getSessionCourse(session);
+			ArrayList<Course> sc = Query.getSessionCourse(memberID,session);
 			GridBagConstraints ses = sc.get(0).sessionVisualization(session);
 			for(Course cour:sc) {
 				co.insets = new Insets(0,(numClash-1)*(30-numClash),0,0);
@@ -554,14 +580,14 @@ public class SchedulePanel extends JPanel {
 		c.gridy = 1;
 		c.anchor = GridBagConstraints.WEST;
 		c.insets = new Insets(3,5,0,0);
-		for(String input:(ArrayList<String>)initQuery.dbGetResult()[0]) {
+		for(String input:(ArrayList<String>)Query.dbGetResult(memberID)[0]) {
 			JLabel cI = new JLabel(input);
 			cI.setFont(curCFont);
 			this.currentCoursePanel.add(cI,c);
 			c.gridy += 1;
 		}
 		c.anchor = GridBagConstraints.SOUTH;
-		c.insets = new Insets(3,5,485-initQuery.dbGetResult()[0].size()*27,0);
+		c.insets = new Insets(3,5,485-Query.dbGetResult(memberID)[0].size()*27,0);
 		this.currentCoursePanel.add(this.blank,c);
 		this.currentCoursePanel.validate();
 	}
@@ -649,10 +675,10 @@ public class SchedulePanel extends JPanel {
 		class lockListener implements ChangeListener {
 			public void stateChanged(ChangeEvent e) {
 				if(lockButton.isSelected() == true) {
-					initQuery.dbLockControl(courseID,true);
+					Query.dbLockControl(memberID,courseID,true);
 				}
 				else {
-					initQuery.dbLockControl(courseID,false);
+					Query.dbLockControl(memberID,courseID,false);
 				}
 			}
 		}
@@ -670,7 +696,7 @@ public class SchedulePanel extends JPanel {
 				}
 				//不知道為什麼要擺在這裡才能在drop mode呼叫
 				else if(aI.equals("all")) {
-					initQuery.dbDeleteResult(true);
+					Query.dbDeleteResult(memberID);
 				}
 				else {
 					ArrayList<String> extraList = new ArrayList<String>();
@@ -679,8 +705,8 @@ public class SchedulePanel extends JPanel {
 					}
 					removeTimeTable();
 					removeCurrentCoursePanel();
-					initQuery.dbSearch(extraList);
-					updateTimeTable(initQuery.dbGetResult()[1]);
+					Query.dbSearch(memberID,extraList);
+					updateTimeTable(Query.dbGetResult(memberID)[1]);
 					updateCurrentCoursePanel();
 					adjustCourseInput.setText("");
 				}
@@ -705,8 +731,8 @@ public class SchedulePanel extends JPanel {
 					}
 					removeTimeTable();
 					removeCurrentCoursePanel();
-					initQuery.dbDeleteResult(removeList);
-					updateTimeTable(initQuery.dbGetResult()[1]);
+					Query.dbDeleteResult(memberID,removeList);
+					updateTimeTable(Query.dbGetResult(memberID)[1]);
 					updateCurrentCoursePanel();
 					adjustCourseInput.setText("");
 				}

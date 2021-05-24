@@ -1,8 +1,13 @@
 import java.awt.CardLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-
 import javax.swing.*;
+
+/**
+ * NCCU Course Schedule Planner 
+ * @author TSAO CHING CHIH
+ * @version 1.2
+ */
 
 public class Main {
 	public static void main(String[] args) {
@@ -16,13 +21,17 @@ public class Main {
 	
 		LoginPanel login = new LoginPanel();
 		SchedulePanel schedule = new SchedulePanel();
+		RegisterPanel register = new RegisterPanel();
 		
 		all.add("login",login);
 		all.add("schedule",schedule);
+		all.add("register",register);
 		c.show(all,"login");
+		login.addButtonListener1(all,schedule);
 		login.addButtonListener2(all,schedule);
+		login.addButtonListener3(all,register);
 		schedule.addLogOutListener(all,login);
-		
+
 		sp.add(all);
 		sp.addWindowListener(new WindowAdapter() {
 	        @Override

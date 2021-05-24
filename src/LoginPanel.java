@@ -11,7 +11,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.font.TextAttribute;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.swing.*;
 
@@ -22,13 +25,14 @@ public class LoginPanel extends JPanel {
 	private JLabel headLabel;
 	private JLabel subHeadLabel;
 	
-	private JPanel crawPanel;
+	private JPanel memberPanel;
 	private JLabel titleLabel;
 	private JLabel subtitleLabel1;
 	private JLabel subtitleLabel2;
 	private JTextField userIDField;
 	private JPasswordField passwordField;
 	private JButton loginButton;
+	private JButton registerLabel;
 	
 	private JPanel centerPanel;
 	private JLabel centerLabel;
@@ -50,7 +54,7 @@ public class LoginPanel extends JPanel {
 		setLayout(new BorderLayout());
 		setBackground(Color.white);
 		add(this.titlePanel,BorderLayout.NORTH);
-		add(this.crawPanel,BorderLayout.WEST);
+		add(this.memberPanel,BorderLayout.WEST);
 		add(this.centerPanel,BorderLayout.CENTER);
 		add(this.dbPanel,BorderLayout.EAST);
 		add(this.creditPanel,BorderLayout.SOUTH);
@@ -63,29 +67,29 @@ public class LoginPanel extends JPanel {
 		this.titlePanel.setBackground(Color.white);
 		GridBagConstraints tp = new GridBagConstraints();
 		tp.anchor = GridBagConstraints.SOUTHWEST;
-		tp.insets = new Insets(0,-150,0,0);
+		tp.insets = new Insets(0,-120,5,0);
 		tp.gridx = 0;
 		tp.gridy = 0;
 		tp.gridheight = 2;
-		this.imgLabel = new JLabel(new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(128, 160, Image.SCALE_SMOOTH)));
+		this.imgLabel = new JLabel(new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(115, 144, Image.SCALE_SMOOTH)));
 		this.titlePanel.add(imgLabel,tp);
-		tp.insets = new Insets(70,10,0,0);
+		tp.insets = new Insets(80,25,0,0);
 		tp.gridx = 1;
 		tp.gridheight = 1;
 		this.headLabel = new JLabel("NCCU Course Schedule Planner");
 		this.headLabel.setFont(new Font("Avenir-BlackOblique",Font.PLAIN,50));
 		this.titlePanel.add(headLabel,tp);
-		tp.insets = new Insets(5,10,0,0);
+		tp.insets = new Insets(5,25,0,0);
 		tp.gridy = 1;
 		this.subHeadLabel = new JLabel("\"see see ur schedule\"");
 		this.subHeadLabel.setFont(new Font("Avenir-LightOblique",Font.PLAIN,36));
 		this.titlePanel.add(subHeadLabel,tp);
 		
 		
-		this.crawPanel = new JPanel();
-		this.crawPanel.setLayout(new GridBagLayout());
-		this.crawPanel.setBackground(Color.white);
-		this.crawPanel.setPreferredSize(new Dimension(550,450));
+		this.memberPanel = new JPanel();
+		this.memberPanel.setLayout(new GridBagLayout());
+		this.memberPanel.setBackground(Color.white);
+		this.memberPanel.setPreferredSize(new Dimension(550,450));
 		
 		GridBagConstraints r1 = new GridBagConstraints();
 		r1.insets = new Insets(40,80,0,0);
@@ -123,30 +127,28 @@ public class LoginPanel extends JPanel {
 		r6.insets = new Insets(15,80,50,0);
 		r6.gridx = 0;
 		r6.gridy = 5;
-		r6.ipadx = 50;
-		r6.ipady = 15;
 		r6.anchor = GridBagConstraints.EAST;
 		
-		this.titleLabel = new JLabel("登入 iNCCU 以獲取您的追蹤課程列表");
+		this.titleLabel = new JLabel("登入以保存您的預排課表紀錄");
 		this.titleLabel.setFont(new Font("Avenir-Medium",Font.PLAIN,28));
 		this.titleLabel.setForeground(new Color(106,185,195));
-		this.crawPanel.add(titleLabel,r1);
+		this.memberPanel.add(titleLabel,r1);
 		
-		this.subtitleLabel1 = new JLabel("將追蹤課程列表以課表形式可視化，本站將不會儲存");
+		this.subtitleLabel1 = new JLabel("協助保存此次登入操作，以便下次登入時");
 		this.subtitleLabel1.setFont(new Font("Avenir",Font.PLAIN,20));
 		this.subtitleLabel1.setForeground(new Color(122,122,122));
-		this.crawPanel.add(subtitleLabel1,r2);
+		this.memberPanel.add(subtitleLabel1,r2);
 		
-		this.subtitleLabel2 = new JLabel("其他個人資料。");
+		this.subtitleLabel2 = new JLabel("快速存取。");
 		this.subtitleLabel2.setFont(new Font("Avenir",Font.PLAIN,20));
 		this.subtitleLabel2.setForeground(new Color(122,122,122));
-		this.crawPanel.add(subtitleLabel2,r3);
+		this.memberPanel.add(subtitleLabel2,r3);
 		
 		this.userIDField = new JTextField("  帳號/學號 ID");
 		this.userIDField.setFont(new Font("Avenir",Font.PLAIN,20));
 		this.userIDField.setForeground(new Color(120,120,120));
 		this.userIDField.setBackground(new Color(182,220,224));
-		this.crawPanel.add(userIDField,r4);
+		this.memberPanel.add(userIDField,r4);
 		addFocusListener1();
 		
 		this.passwordField = new JPasswordField("  密碼 Password");
@@ -154,21 +156,43 @@ public class LoginPanel extends JPanel {
 		this.passwordField.setFont(new Font("Avenir",Font.PLAIN,20));
 		this.passwordField.setForeground(new Color(120,120,120));
 		this.passwordField.setBackground(new Color(182,220,224));
-		this.crawPanel.add(passwordField,r5);
+		this.memberPanel.add(passwordField,r5);
 		addFocusListener2();
 		
 		this.loginButton = new JButton("Log-In");
 		this.loginButton.setFont(new Font("Avenir-Heavy",Font.PLAIN,22));
 		this.loginButton.setForeground(new Color(106,185,195));
 		this.loginButton.setFocusable(false); 
-		this.crawPanel.add(loginButton,r6);
+		
+		Map<TextAttribute, Integer> fontAttributes = new HashMap<TextAttribute, Integer>();
+		fontAttributes.put(TextAttribute.UNDERLINE, TextAttribute.UNDERLINE_ON);
+		this.registerLabel = new JButton("Join now!");
+		this.registerLabel.setFont(new Font("Avenir",Font.PLAIN,20).deriveFont(fontAttributes));
+		this.registerLabel.setForeground(new Color(86,122,154));
+		this.registerLabel.setBorderPainted(false);
+		this.registerLabel.setOpaque(false);
+		this.registerLabel.setBackground(Color.WHITE);
+		
+		JPanel buttonSet = new JPanel();
+		buttonSet.setBackground(Color.WHITE);
+		buttonSet.setLayout(new GridBagLayout());
+		GridBagConstraints bs = new GridBagConstraints();
+		bs.fill = GridBagConstraints.BOTH;
+		bs.gridx = 0;
+		buttonSet.add(registerLabel,bs);
+		bs.gridx = 1;
+		bs.ipadx = 50;
+		bs.ipady = 15;
+		bs.fill = GridBagConstraints.BOTH;
+		buttonSet.add(loginButton,bs);
+
+		this.memberPanel.add(buttonSet,r6);
 		
 		this.centerPanel = new JPanel();
 		this.centerPanel.setPreferredSize(new Dimension(60,400));
 		this.centerPanel.setBackground(Color.white);
 		this.centerPanel.setLayout(new GridBagLayout());
 		GridBagConstraints center = new GridBagConstraints();
-		center.insets = new Insets(0,35,0,0);
 		center.fill = GridBagConstraints.VERTICAL;
 		this.centerLabel = new JLabel(new ImageIcon(new ImageIcon("centerline.png").getImage().getScaledInstance(25, 356, Image.SCALE_SMOOTH)));
 		this.centerPanel.add(centerLabel,center);
@@ -258,6 +282,7 @@ public class LoginPanel extends JPanel {
 		return this.courseInfoField;
 	}
 	
+	//輸入提示字樣
 	public void addFocusListener1() {
 		class InputHintListener implements FocusListener{
 		    public void focusGained(FocusEvent e) {
@@ -319,22 +344,56 @@ public class LoginPanel extends JPanel {
 		this.courseInfoField.addFocusListener(f);
 	}
 	
-	public void addButtonListener1() {
+	//會員登入按鈕
+	public void addButtonListener1(JPanel main,SchedulePanel result) {
 		class ClickListener implements ActionListener {
+			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent e) {
-				
+				try {
+					int user = Integer.parseInt(userIDField.getText());
+					char[] password = passwordField.getPassword();
+					if(Query.loginVerify(user,password)) {
+						if(loginBefore == true) {
+							result.recordMemberID(user);
+							result.recordMemberName(user);
+							result.setMemberNameLabel();
+							result.updateTimeTable(Query.dbGetResult(Integer.toString(user))[1]);
+							result.updateCurrentCoursePanel();
+							((CardLayout)main.getLayout()).show(main,"schedule");
+						}
+						else {
+							loginBefore = true;
+							result.recordMemberID(user);
+							result.recordMemberName(user);
+							result.setMemberNameLabel();
+							result.createTimeTable(Query.dbGetResult(Integer.toString(user))[1]);
+							result.createCurrentCoursePanel(Query.dbGetResult(Integer.toString(user))[0]);
+							((CardLayout)main.getLayout()).show(main,"schedule");
+						}
+					}
+					else {
+						JOptionPane.showMessageDialog(null, "帳號或密碼輸入錯誤，\n請重新輸入。");
+					}
+				} catch(Exception ex) {
+					JOptionPane.showMessageDialog(null, "帳號或密碼輸入錯誤，\n請重新輸入。");
+				}
+				finally {
+					userIDField.setText("");
+					passwordField.setText("");
+				}
 			}
 		}
 		ActionListener button = new ClickListener();
 		this.loginButton.addActionListener(button);
 	}
 	
+	//訪客查詢按鈕
 	public void addButtonListener2(JPanel main,SchedulePanel result) {
 		class ClickListener implements ActionListener {
 			@SuppressWarnings("unchecked")
 			public void actionPerformed(ActionEvent e) {
+				String cI = courseInfoField.getText();
 				if(loginBefore == true) {
-					String cI = courseInfoField.getText();
 					if(cI.equals("")||cI.equals("  XXX306XXX-000111222-程式設計二")) {
 						//nothing happens
 					}
@@ -343,24 +402,40 @@ public class LoginPanel extends JPanel {
 						for (String course:cI.split("-")) {
 							extraList.add(course);
 						}
-						result.getInitQuery().dbSearch(extraList);
+						Query.dbSearch("Search",extraList);
 					}
-					result.updateTimeTable(result.getInitQuery().dbGetResult()[1]);
+					result.recordVisitor("Search");
+					result.recordMemberName(0);
+					result.setMemberNameLabel();
+					result.updateTimeTable(Query.dbGetResult("Search")[1]);
 					result.updateCurrentCoursePanel();
 					((CardLayout)main.getLayout()).show(main,"schedule");
 				}
 				else {
 					loginBefore = true;
-					Query q = new Query(courseInfoField.getText(),result);
-					result.recordQuery(q);
-					result.createTimeTable(q.dbGetResult()[1]);
-					result.createCurrentCoursePanel(q.dbGetResult()[0]);
+					result.recordVisitor("Search");
+					result.recordMemberName(0);
+					result.setMemberNameLabel();
+					Query.visitorInitSearch(cI);
+					result.createTimeTable(Query.dbGetResult("Search")[1]);
+					result.createCurrentCoursePanel(Query.dbGetResult("Search")[0]);
 					((CardLayout)main.getLayout()).show(main,"schedule");
 				}
 			}
 		}
 		ActionListener button = new ClickListener();
 		this.submitButton.addActionListener(button);
+	}
+	
+	//註冊按鈕
+	public void addButtonListener3(JPanel main,RegisterPanel regis) {
+		class ClickListener implements ActionListener {
+			public void actionPerformed(ActionEvent e) {
+				((CardLayout)main.getLayout()).show(main,"register");
+			}
+		}
+		ActionListener button = new ClickListener();
+		this.registerLabel.addActionListener(button);
 	}
 	
 }
