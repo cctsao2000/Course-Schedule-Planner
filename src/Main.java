@@ -30,6 +30,7 @@ public class Main {
 		login.addButtonListener1(all,schedule);
 		login.addButtonListener2(all,schedule);
 		login.addButtonListener3(all,register);
+		register.addLoginListener(all,login);
 		schedule.addLogOutListener(all,login);
 
 		sp.add(all);
@@ -40,6 +41,7 @@ public class Main {
 	            e.getWindow().dispose();
 	        }
 	    });
+		
 		sp.setVisible(true);
 		sp.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}

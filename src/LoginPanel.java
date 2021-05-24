@@ -85,7 +85,6 @@ public class LoginPanel extends JPanel {
 		this.subHeadLabel.setFont(new Font("Avenir-LightOblique",Font.PLAIN,36));
 		this.titlePanel.add(subHeadLabel,tp);
 		
-		
 		this.memberPanel = new JPanel();
 		this.memberPanel.setLayout(new GridBagLayout());
 		this.memberPanel.setBackground(Color.white);

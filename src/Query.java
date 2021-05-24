@@ -20,6 +20,38 @@ public class Query {
 		return query;
 	}
 	
+	//註冊前檢查重複id
+	public static boolean registerVerify(int id) {
+		int count = -1;
+		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
+		String query;
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(url);
+			Statement stat = conn.createStatement();
+			query = String.format("SELECT COUNT(*) FROM Member WHERE MemberID = %d",id);
+			ResultSet result = stat.executeQuery(query);
+			if (result.next()) {
+				count = result.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally{
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+		if(count!=0) {
+			return false;
+		}
+		else {
+			return true;
+		}
+	}
+	
 	//註冊
 	public static void register(int id, String name, char[] pass) {
 		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
@@ -436,6 +468,29 @@ public class Query {
 		try {
 			conn = DriverManager.getConnection(url);
 			Statement stat = conn.createStatement();
+			stat.execute(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		finally{
+			try {
+				conn.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	public static void dbDeleteMember(int id) {
+		String url = SERVER + DATABASE + "?user=" + USERNAME + "&password=" + PASSWORD + ENCODING;
+		String query;
+		Connection conn = null;
+		try {
+			conn = DriverManager.getConnection(url);
+			Statement stat = conn.createStatement();
+			query = String.format("DELETE FROM Member WHERE MemberID = %d", id);
+			stat.execute(query);
+			query = String.format("DROP TABLE %dResult", id);
 			stat.execute(query);
 		} catch (SQLException e) {
 			e.printStackTrace();
