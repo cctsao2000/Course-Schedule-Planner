@@ -29,7 +29,7 @@ This function also supports entering multiple courses at the same time by linkin
 * **Timetable**  
 The timetable is designed based on most students' need. Therefore, weekend and sessions that are too late or too early are ignored in the timetable for easier reading.
 ![Timetable](timetable.png)  
-Every course block shown in the timetable is a button. A random low saturation color will be assigned to every course block, ensuring the words on the buttons can be clearly seen. When the user click on it, a message box will popup and show the information about the course. On the message box, there is a lock toggle button that allows user to lock the selected course. If a course is locked, it can no longer be deleted by any method unless the user unlock it.
+Every course block shown in the timetable is a button. A random low saturation color will be assigned to every course block, ensuring the words on the buttons can be clearly seen. When the user click on it, a message box will popup and show the information about the course. On the message box, there is a lock toggle button that allows user to lock the selected course. If a course is locked, it can no longer be deleted by any method unless the user unlock it.  
 ![Popup Message Box](info.png)  
 A feature of the system is that it can show the timetable clash between multiple courses. When there are n courses in the same session, the session will be split into n parts. 
 ![Timetable Clash](timeclash.png)  
