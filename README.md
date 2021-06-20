@@ -1,6 +1,9 @@
 # NCCU Course Schedule Planner  
 A desktop application for NCCU students to visualize their course schedule  
 [View on GitHub](https://github.com/plack537/CourseSchedulePlanner)  
+## Operating System 
+macOS BigSur 11.4  
+openjdk version 11.0.9
 ## Login Page  
 ![Login Page](readme_img/login.png)  
 There are two ways to access the service:  
@@ -14,9 +17,10 @@ The visitor mode allows user to simply enter course name and course ID at the lo
 ![Schedule Page](readme_img/schedule.png)  
 The main functions of the system includes:  
 * **Course Input Box**  
-The toggle button controls the add/drop mode of the course, select the mode and enter the courses name/ID, then, click the button. The change listener of the toggle button not only controls the appearance of the border and button, but also changes the action listener of the add/drop button (the one with plus/minus sign).  
+The toggle button controls the add/drop mode of the course, select the mode and enter the courses name/ID, then, click the button. The change listener of the toggle button not only controls the appearance of the border and button, but also changes the action listener of the add/drop button (the one with plus/minus sign).   
+**_Make sure the course input box is cleared before you switch mode._**  
 ![Add Mode](readme_img/add.png)  
-![Drop Mode](readme_img/drop.png)  
+![Drop Mode](readme_img/drop.png)  
 This function also supports entering multiple courses at the same time by linking the courses name/ID with hyphens. The system will first split the input string by hyphens and save it to an arraylist, after that, try-catch will be used inside a loop to check whether the user entered a name or an ID. 
     ```
     try {
