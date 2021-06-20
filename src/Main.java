@@ -6,7 +6,7 @@ import javax.swing.*;
 /**
  * NCCU Course Schedule Planner 
  * @author TSAO CHING CHIH
- * @version 1.2
+ * @version 1.3
  */
 
 public class Main {

@@ -62,7 +62,7 @@ public class RegisterPanel extends JPanel{
 		this.welcomePanel.setLayout(new GridBagLayout());
 		this.welcomePanel.setBackground(new Color(240,240,240));
 		
-		this.imgLabel = new JLabel(new ImageIcon(new ImageIcon("logo-cutout.png").getImage().getScaledInstance(185, 230, Image.SCALE_SMOOTH)));
+		this.imgLabel = new JLabel(new ImageIcon(new ImageIcon("img/logo-cutout.png").getImage().getScaledInstance(185, 230, Image.SCALE_SMOOTH)));
 		GridBagConstraints wp = new GridBagConstraints();
 		wp.gridx = 0;
 		wp.gridy = 0;

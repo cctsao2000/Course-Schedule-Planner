@@ -137,7 +137,7 @@ public class SchedulePanel extends JPanel {
 	}
 	
 	public void createComp() {
-		this.imgLabel = new JLabel(new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(81, 103, Image.SCALE_SMOOTH)));
+		this.imgLabel = new JLabel(new ImageIcon(new ImageIcon("img/logo.png").getImage().getScaledInstance(81, 103, Image.SCALE_SMOOTH)));
 		this.titleLabel = new JLabel("NCCU Course Schedule Planner");
 		this.titleLabel.setFont(new Font("Avenir-BlackOblique",Font.PLAIN,34));
 		this.subtitleLabel = new JLabel("\"see see ur schedule\"");
@@ -148,8 +148,8 @@ public class SchedulePanel extends JPanel {
 		this.adjustCoursePanel.setBackground(Color.white);
 		this.changeModeButton = new JToggleButton();
 		this.changeModeButton.setBorderPainted(false);
-		this.changeModeButton.setSelectedIcon(new ImageIcon(new ImageIcon("toggle_minus.png").getImage().getScaledInstance(70, 40, Image.SCALE_SMOOTH)));
-		this.changeModeButton.setIcon(new ImageIcon(new ImageIcon("toggle_plus.png").getImage().getScaledInstance(70, 40, Image.SCALE_SMOOTH)));
+		this.changeModeButton.setSelectedIcon(new ImageIcon(new ImageIcon("img/toggle_minus.png").getImage().getScaledInstance(70, 40, Image.SCALE_SMOOTH)));
+		this.changeModeButton.setIcon(new ImageIcon(new ImageIcon("img/toggle_plus.png").getImage().getScaledInstance(70, 40, Image.SCALE_SMOOTH)));
 		addChangeModeListener();
 		this.adjustCourseInput = new JTextField();
 		this.adjustCourseInput.setFont(new Font("Avenir",Font.PLAIN,20));
@@ -386,7 +386,7 @@ public class SchedulePanel extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 				JToggleButton lockButton = createLockButton(cour.getCourseID());
 				addLockListener(lockButton,cour.getCourseID());
-				ImageIcon icon = new ImageIcon("icon.png");
+				ImageIcon icon = new ImageIcon("img/icon.png");
 				String[] options = {"刪除本課程","OK"};
 				JPanel info = new JPanel();
 				info.setLayout(new GridBagLayout());
@@ -430,8 +430,8 @@ public class SchedulePanel extends JPanel {
 	public JToggleButton createLockButton(String CourseID) {
 		JToggleButton lockButton = new JToggleButton();
 		lockButton.setBorderPainted(false);
-		lockButton.setSelectedIcon(new ImageIcon(new ImageIcon("locked.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
-		lockButton.setIcon(new ImageIcon(new ImageIcon("unlocked.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+		lockButton.setSelectedIcon(new ImageIcon(new ImageIcon("img/locked.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
+		lockButton.setIcon(new ImageIcon(new ImageIcon("img/unlocked.png").getImage().getScaledInstance(20, 20, Image.SCALE_SMOOTH)));
 		lockButton.setSelected(Query.getLockStatus(memberID,CourseID));
 		return lockButton;
 	}
@@ -745,7 +745,7 @@ public class SchedulePanel extends JPanel {
 	public void addDownloadListener() {
 		class CaptureListener implements ActionListener {
 			public void actionPerformed(ActionEvent e) {
-				ImageIcon icon = new ImageIcon("icon.png");
+				ImageIcon icon = new ImageIcon("img/icon.png");
 				Point p = timeTablePanel.getLocationOnScreen();
 			    Dimension dim = timeTablePanel.getSize();
 			    Rectangle scheduleField = new Rectangle(p, dim);

@@ -71,7 +71,7 @@ public class LoginPanel extends JPanel {
 		tp.gridx = 0;
 		tp.gridy = 0;
 		tp.gridheight = 2;
-		this.imgLabel = new JLabel(new ImageIcon(new ImageIcon("logo.png").getImage().getScaledInstance(115, 144, Image.SCALE_SMOOTH)));
+		this.imgLabel = new JLabel(new ImageIcon(new ImageIcon("img/logo.png").getImage().getScaledInstance(115, 144, Image.SCALE_SMOOTH)));
 		this.titlePanel.add(imgLabel,tp);
 		tp.insets = new Insets(80,25,0,0);
 		tp.gridx = 1;
@@ -193,7 +193,7 @@ public class LoginPanel extends JPanel {
 		this.centerPanel.setLayout(new GridBagLayout());
 		GridBagConstraints center = new GridBagConstraints();
 		center.fill = GridBagConstraints.VERTICAL;
-		this.centerLabel = new JLabel(new ImageIcon(new ImageIcon("centerline.png").getImage().getScaledInstance(25, 356, Image.SCALE_SMOOTH)));
+		this.centerLabel = new JLabel(new ImageIcon(new ImageIcon("img/centerline.png").getImage().getScaledInstance(25, 356, Image.SCALE_SMOOTH)));
 		this.centerPanel.add(centerLabel,center);
 		
 		GridBagConstraints d1 = new GridBagConstraints();
